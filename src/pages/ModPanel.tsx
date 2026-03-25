@@ -532,7 +532,18 @@ export default function ModPanel() {
                                   {player.hasFinished ? `${player.score}%` : 'In progress'}
                                 </div>
                               </div>
-                              <span style={{ fontSize: '0.7rem', color: '#475569' }}>✏️</span>
+                              <div style={{ display: 'flex', gap: '4px' }}>
+                                {!player.isKicked && (
+                                  <button onClick={(e) => { e.stopPropagation(); adminUpdatePlayer(player.id, { isKicked: true }); toast.success(`Kicked ${player.name}`); }}
+                                    style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', cursor: 'pointer', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                                    Kick
+                                  </button>
+                                )}
+                                <button onClick={(e) => { e.stopPropagation(); setEditingPlayer(player); }}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem', padding: '2px' }} title="Edit Player">
+                                  ✏️
+                                </button>
+                              </div>
                             </div>
                           ))}
                           {players.length === 0 && <div style={{ color: '#475569', fontSize: '0.75rem', padding: '8px' }}>No players</div>}
@@ -584,11 +595,19 @@ export default function ModPanel() {
                       Session: {player.sessionId.slice(0, 12)}...
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                     <div style={{ fontWeight: 700, fontSize: '0.9rem', color: player.hasFinished ? '#34d399' : '#475569' }}>
                       {player.hasFinished ? `${player.score}%` : '—'}
                     </div>
-                    <div style={{ fontSize: '0.6rem', color: '#475569' }}>{player.hasFinished ? 'Done' : 'Working'}</div>
+                    <div style={{ fontSize: '0.6rem', color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {player.hasFinished ? 'Done' : 'Working'}
+                      {!player.isKicked && (
+                        <button onClick={(e) => { e.stopPropagation(); adminUpdatePlayer(player.id, { isKicked: true }); toast.success(`Kicked ${player.name}`); }}
+                          style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', cursor: 'pointer', fontSize: '0.6rem', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                          Kick
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
