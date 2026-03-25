@@ -130,8 +130,8 @@ function getShuffledOrder(sessionId: string): Instrument[] {
 function DraggableItem({ id, name }: { id: string; name: string }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id });
   const style = transform
-    ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: isDragging ? 999 : 1, position: 'relative' as const }
-    : { zIndex: 1, position: 'relative' as const };
+    ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: isDragging ? 999 : 1, position: 'relative' as const, touchAction: 'none' as const }
+    : { zIndex: 1, position: 'relative' as const, touchAction: 'none' as const };
 
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
