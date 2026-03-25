@@ -25,7 +25,12 @@ export default function StudentJoin() {
         setLoading(false);
         return;
       }
-      const pid = await joinSession(session.id, name);
+      let deviceId = localStorage.getItem('deviceId');
+      if (!deviceId) {
+        deviceId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        localStorage.setItem('deviceId', deviceId);
+      }
+      const pid = await joinSession(session.id, name, deviceId);
       localStorage.setItem('currentPlayerId', pid);
       setActiveSession(session);
       setLoading(false);
