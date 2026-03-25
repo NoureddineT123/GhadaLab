@@ -7,7 +7,8 @@ import {
   query, 
   where, 
   addDoc,
-  serverTimestamp 
+  serverTimestamp,
+  getDocs
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Session, SessionPlayer } from '../types';
@@ -73,21 +74,31 @@ export async function updateSessionStatus(sessionId: string, status: 'waiting' |
 /**
  * Join session
  */
-export async function joinSession(sessionId: string, name: string) {
-  // Combine sessionID + name for a predictable ID that allows easy reconnect
-  // In a robust app, use proper unique IDs or anonymous Auth
-  const playerId = `${sessionId}_${name.replace(/\\s+/g, '')}`;
+export async function joinSession(sessionId: string, name: string, deviceId: string) {
+  // Kick old sessions from the same device
+  const q = query(collection(db, PLAYERS_COL), where("sessionId", "==", sessionId), where("deviceId", "==", deviceId));
+  const snapshot = await getDocs(q);
+  
+  snapshot.forEach(async (d) => {
+    if (!d.data().isKicked) {
+      await updateDoc(doc(db, PLAYERS_COL, d.id), { isKicked: true });
+    }
+  });
+
+  // Create unique ID to avoid overwriting and relying on name strictly, since we now rely on deviceId
+  const playerId = `${sessionId}_${name.replace(/\s+/g, '')}_${Date.now()}`;
   const playerRef = doc(db, PLAYERS_COL, playerId);
   
   await setDoc(playerRef, {
     sessionId,
     name,
+    deviceId,
     score: 0,
     progress: {},
     isKicked: false,
     hasFinished: false,
     joinedAt: serverTimestamp()
-  }, { merge: true }); // Merge if reconnecting
+  });
   
   return playerId;
 }
