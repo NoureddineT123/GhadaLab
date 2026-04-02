@@ -87,6 +87,82 @@ export default function TeacherDashboard() {
                 </button>
               </motion.div>
 
+              {/* Rhyming Sentences */}
+              <motion.div
+                whileHover={{ y: -4, borderColor: 'rgba(244,114,182,0.3)' }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  padding: '1.5rem',
+                  borderRadius: '20px',
+                  background: 'linear-gradient(135deg, rgba(244,114,182,0.06), rgba(192,132,252,0.03))',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(244,114,182,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    📝
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0 }}>Rhyming Sentences</h4>
+                    <span className="badge badge-primary" style={{ marginTop: '4px', background: 'rgba(244,114,182,0.12)', color: '#f472b6', borderColor: 'rgba(244,114,182,0.2)' }}>Drag & Match</span>
+                  </div>
+                </div>
+                <p style={{ color: '#64748b', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1.2rem' }}>
+                  Students match 12 rhyming sentence pairs (English & Arabic). Drag the correct second line to its first line. Auto-graded on submit.
+                </p>
+                <button
+                  className="btn"
+                  onClick={() => handleLaunchTemplate('rhyming-sentences', 'Rhyming Sentences')}
+                  disabled={loadingId !== null}
+                  style={{ width: '100%', borderRadius: '12px', padding: '12px', fontSize: '0.9rem', background: 'linear-gradient(135deg, #f472b6, #c084fc)' }}
+                >
+                  {loadingId === 'rhyming-sentences' ? (
+                    <div className="spinner" style={{ width: '18px', height: '18px' }} />
+                  ) : (
+                    '🚀 Launch Activity'
+                  )}
+                </button>
+              </motion.div>
+
+              {/* Orchestra Layout */}
+              <motion.div
+                whileHover={{ y: -4, borderColor: 'rgba(251,191,36,0.3)' }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  padding: '1.5rem',
+                  borderRadius: '20px',
+                  background: 'linear-gradient(135deg, rgba(251,191,36,0.06), rgba(244,114,182,0.03))',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(251,191,36,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    🎼
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0 }}>Orchestra Layout</h4>
+                    <span className="badge badge-primary" style={{ marginTop: '4px', background: 'rgba(251,191,36,0.12)', color: '#fbbf24', borderColor: 'rgba(251,191,36,0.2)' }}>Visual Map</span>
+                  </div>
+                </div>
+                <p style={{ color: '#64748b', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1.2rem' }}>
+                  Students fill in a 2D orchestra stage layout by dragging 17 instrument labels to their correct positions. Color-coded by section.
+                </p>
+                <button
+                  className="btn"
+                  onClick={() => handleLaunchTemplate('orchestra-layout', 'Orchestra Layout')}
+                  disabled={loadingId !== null}
+                  style={{ width: '100%', borderRadius: '12px', padding: '12px', fontSize: '0.9rem', background: 'linear-gradient(135deg, #fbbf24, #f472b6)' }}
+                >
+                  {loadingId === 'orchestra-layout' ? (
+                    <div className="spinner" style={{ width: '18px', height: '18px' }} />
+                  ) : (
+                    '🚀 Launch Activity'
+                  )}
+                </button>
+              </motion.div>
+
             </div>
           </div>
 

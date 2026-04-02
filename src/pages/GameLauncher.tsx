@@ -4,6 +4,8 @@ import { subscribeToSession } from '../lib/db';
 import type { Session } from '../types';
 
 import InstrumentFamiliesGame from './games/InstrumentFamilies';
+import RhymingSentencesGame from './games/RhymingSentences';
+import OrchestraLayoutGame from './games/OrchestraLayout';
 
 export default function GameLauncher() {
   const { sessionId } = useParams();
@@ -35,6 +37,10 @@ export default function GameLauncher() {
   switch (session.gameId) {
     case 'instrument-families':
       return <InstrumentFamiliesGame />;
+    case 'rhyming-sentences':
+      return <RhymingSentencesGame />;
+    case 'orchestra-layout':
+      return <OrchestraLayoutGame />;
     default:
       return (
         <div className="container text-center" style={{ paddingTop: '4rem' }}>

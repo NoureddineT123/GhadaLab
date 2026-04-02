@@ -53,7 +53,7 @@ export default function HostSession() {
             </button>
             <h2 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
               <span style={{ background: 'linear-gradient(135deg, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                {session.gameId === 'instrument-families' ? 'Instrument Families' : session.gameId}
+                {session.gameId === 'instrument-families' ? 'Instrument Families' : session.gameId === 'rhyming-sentences' ? 'Rhyming Sentences' : session.gameId === 'orchestra-layout' ? 'Orchestra Layout' : session.gameId}
               </span>
             </h2>
             <p style={{ color: '#475569', fontSize: '0.85rem', marginTop: '2px' }}>Live Session Control</p>
