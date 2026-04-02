@@ -152,9 +152,11 @@ function InstrumentSprite({ row, col, size = 40 }: { row: number; col: number; s
   );
 }
 
-// ── Draggable Family Label ──
-function DraggableFamilyLabel({ family }: { family: FamilyZone }) {
+// ── Draggable Family Group ──
+function DraggableFamilyGroup({ family }: { family: FamilyZone }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: `fam_${family.id}` });
+  const insts = STATIC_INSTRUMENTS.filter(i => i.familyId === family.id);
+  
   const style = transform
     ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: isDragging ? 999 : 1, position: 'relative' as const, touchAction: 'none' as const }
     : { zIndex: 1, position: 'relative' as const, touchAction: 'none' as const };
@@ -165,19 +167,27 @@ function DraggableFamilyLabel({ family }: { family: FamilyZone }) {
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
         style={{
-          padding: '12px 20px', cursor: 'grab',
+          padding: '8px 16px', cursor: 'grab',
           background: isDragging ? 'rgba(99,102,241,0.2)' : family.bgColor,
           border: isDragging ? '2px solid rgba(99,102,241,0.5)' : `2px solid ${family.borderColor}`,
           borderRadius: '14px',
           boxShadow: isDragging ? '0 12px 32px rgba(0,0,0,0.5)' : `0 4px 12px rgba(0,0,0,0.15)`,
           transition: 'box-shadow 0.2s, border-color 0.2s',
           backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
         }}
         onPointerDown={() => playSound('pop')}
       >
-        <span style={{ fontSize: '1.3rem' }}>{family.emoji}</span>
-        <span style={{ fontSize: '1rem', fontWeight: 700, color: family.color, letterSpacing: '-0.01em' }}>{family.label}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '1.2rem' }}>{family.emoji}</span>
+          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: family.color, letterSpacing: '-0.01em' }}>{family.label}</span>
+        </div>
+        <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+          {insts.slice(0, 4).map(inst => (
+             <InstrumentSprite key={inst.id} row={inst.spriteRow} col={inst.spriteCol} size={28} />
+          ))}
+          {insts.length > 4 && <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, paddingLeft: '2px' }}>+{insts.length - 4}</span>}
+        </div>
       </motion.div>
     </div>
   );
@@ -196,6 +206,7 @@ function DroppableFamilyZone({
   isCorrect?: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: `zone_${zone.id}` });
+  const insts = placedFamily ? STATIC_INSTRUMENTS.filter(i => i.familyId === placedFamily.id) : [];
 
   return (
     <div
@@ -206,42 +217,39 @@ function DroppableFamilyZone({
         borderRadius: '16px',
         background: submitted
           ? isCorrect ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'
-          : placedFamily ? 'rgba(15,23,42,0.4)' : isOver ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.02)',
+          : placedFamily ? 'transparent' : isOver ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.02)',
         border: submitted
           ? isCorrect ? '2px solid rgba(16,185,129,0.5)' : '2px solid rgba(239,68,68,0.5)'
-          : placedFamily ? `2px solid ${zone.borderColor}` : isOver ? '2px dashed rgba(99,102,241,0.6)' : '1px dashed rgba(255,255,255,0.15)',
+          : placedFamily ? 'none' : isOver ? '2px dashed rgba(99,102,241,0.6)' : '1px dashed rgba(255,255,255,0.15)',
         transition: 'all 0.2s ease',
-        boxShadow: isOver ? `0 0 24px ${zone.glowColor}` : placedFamily ? `0 0 12px ${zone.glowColor}` : 'none',
+        boxShadow: isOver ? `0 0 24px ${zone.glowColor}` : 'none',
         display: 'flex',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'center',
-        padding: '10px',
         zIndex: 5,
         pointerEvents: 'auto',
       }}
     >
-      {/* Name tag for placed item */}
-      {(placedFamily || isOver) && (
-        <div style={{
-          padding: '6px 16px',
-          borderRadius: '20px',
-          background: placedFamily ? 'rgba(15,23,42,0.85)' : 'rgba(99,102,241,0.1)',
-          border: placedFamily ? `1px solid ${placedFamily.borderColor}` : 'none',
-          backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', gap: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-          marginTop: '-20px', // Pull it slightly out of the box
-        }}>
-          {placedFamily ? (
-            <>
-              {submitted && <span>{isCorrect ? '✅' : '❌'}</span>}
-              <span style={{ fontSize: '1rem' }}>{placedFamily.emoji}</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: placedFamily.color }}>{placedFamily.label}</span>
-            </>
-          ) : (
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a5b4fc', fontStyle: 'italic' }}>Drop Family Here</span>
-          )}
-        </div>
+      {placedFamily ? (
+         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '8px', width: '100%', flexWrap: 'wrap' }}>
+           {insts.map(inst => (
+             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} key={inst.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <InstrumentSprite row={inst.spriteRow} col={inst.spriteCol} size={46} />
+                <span style={{ fontSize: '0.65rem', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,1)', fontWeight: 800, textAlign: 'center', lineHeight: 1.1, marginTop: '2px' }}>
+                  {inst.label}
+                </span>
+             </motion.div>
+           ))}
+           {submitted && (
+             <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '1.5rem', background: 'rgba(15,23,42,0.8)', borderRadius: '50%' }}>
+               {isCorrect ? '✅' : '❌'}
+             </div>
+           )}
+         </div>
+      ) : (
+        <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em' }}>
+          {isOver ? 'Drop Here' : 'Empty Spot'}
+        </span>
       )}
     </div>
   );
@@ -441,7 +449,7 @@ export default function OrchestraLayoutGame() {
             <h2 style={{ fontSize: 'clamp(1.1rem, 4vw, 1.5rem)', fontWeight: 800, margin: 0 }}>
               <span style={{ background: 'linear-gradient(135deg, #fbbf24, #f472b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Orchestra Layout</span>
             </h2>
-            <p style={{ color: '#64748b', fontSize: '0.78rem', margin: '2px 0 0' }}>Drag the correct Instrument Family name to their section on stage.</p>
+            <p style={{ color: '#64748b', fontSize: '0.78rem', margin: '2px 0 0' }}>Drag the group of instruments into their correct spot on stage.</p>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -470,7 +478,7 @@ export default function OrchestraLayoutGame() {
           }}>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
               {unmatchedFamilies.map(family => (
-                <DraggableFamilyLabel key={family.id} family={family} />
+                <DraggableFamilyGroup key={family.id} family={family} />
               ))}
               {unmatchedFamilies.length === 0 && !submitted && (
                 <p style={{ color: '#10b981', fontSize: '0.85rem', fontWeight: 600, padding: '8px 0' }}>
@@ -547,33 +555,7 @@ export default function OrchestraLayoutGame() {
               );
             })}
 
-            {/* Absolutely Placed Static Instruments */}
-            {STATIC_INSTRUMENTS.map(inst => (
-              <div
-                key={inst.id}
-                title={inst.label}
-                style={{
-                  position: 'absolute',
-                  left: `${inst.x}%`,
-                  top: `${inst.y}%`,
-                  width: `${inst.width}%`,
-                  height: `${inst.height}%`,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  pointerEvents: 'none', // Don't block dragging into the zones behind them
-                  zIndex: 10,
-                }}
-              >
-                <InstrumentSprite row={inst.spriteRow} col={inst.spriteCol} size={64} />
-                <span style={{
-                  fontSize: 'clamp(0.6rem, 1vw, 0.8rem)', fontWeight: 800,
-                  color: 'rgba(255,255,255,1)', textAlign: 'center', lineHeight: 1.1,
-                  textShadow: '0 2px 4px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,1)',
-                  marginTop: '4px',
-                }}>
-                  {inst.label}
-                </span>
-              </div>
-            ))}
+
           </div>
 
         </DndContext>
